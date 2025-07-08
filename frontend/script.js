@@ -7,8 +7,11 @@ const timeFilter = document.getElementById("time-filter");
 
 let editingId = null;
 
-// Fetch all expenses on page load
-window.onload = fetchExpenses;
+// Set default filter to "today" on load
+window.onload = () => {
+  timeFilter.value = "today";
+  fetchExpenses();
+};
 
 // Re-fetch when time filter changes
 timeFilter.addEventListener("change", fetchExpenses);
@@ -54,10 +57,12 @@ async function fetchExpenses() {
   const filteredData = data.filter((expense) => {
     const expenseDate = new Date(expense.date);
 
-    if (filter === "week") {
-      const oneWeekAgo = new Date();
-      oneWeekAgo.setDate(now.getDate() - 7);
-      return expenseDate >= oneWeekAgo && expenseDate <= now;
+    if (filter === "today") {
+      return (
+        expenseDate.getDate() === now.getDate() &&
+        expenseDate.getMonth() === now.getMonth() &&
+        expenseDate.getFullYear() === now.getFullYear()
+      );
 
     } else if (filter === "month") {
       return (
