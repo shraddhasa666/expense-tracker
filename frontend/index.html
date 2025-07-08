@@ -14,7 +14,6 @@
       <input type="text" id="name" placeholder="Title" required />
       <input type="number" id="amount" placeholder="Amount" required />
 
-      <!-- 🟡 Category Dropdown -->
       <select id="category" required>
         <option value="">--Select Category--</option>
         <option value="Food">Food</option>
@@ -30,18 +29,31 @@
 
     <h2>Expenses</h2>
 
-    <!-- 🟢 Filter Dropdown (Updated) -->
+    <!-- 🔶 Time Filter + Month Selector -->
     <div style="text-align: center; margin: 20px 0;">
       <label for="time-filter"><strong>Filter by Time:</strong></label>
       <select id="time-filter">
-        <option value="all">All</option>
-        
+        <option value="today">Today</option>
         <option value="month">This Month</option>
         <option value="year">This Year</option>
       </select>
+
+      <select id="month-selector" style="display: none; margin-left: 10px;">
+        <option value="0">January</option>
+        <option value="1">February</option>
+        <option value="2">March</option>
+        <option value="3">April</option>
+        <option value="4">May</option>
+        <option value="5">June</option>
+        <option value="6">July</option>
+        <option value="7">August</option>
+        <option value="8">September</option>
+        <option value="9">October</option>
+        <option value="10">November</option>
+        <option value="11">December</option>
+      </select>
     </div>
 
-    <!-- 🧾 Expenses Table -->
     <table id="expenseTable">
       <thead>
         <tr>
@@ -55,8 +67,7 @@
       <tbody></tbody>
     </table>
 
-    <!-- 💰 Total Display -->
-    <h3 id="total" style="text-align: center; margin-top: 20px;">Total: ₹0</h3>
+    <h3 id="total" style="text-align: center; margin-top: 20px;">Today's Total: ₹0</h3>
   </div>
 
   <script src="script.js"></script>
