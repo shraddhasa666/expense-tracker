@@ -2,6 +2,7 @@ const API_URL = "http://localhost:8080/api/expenses";
 
 const form = document.getElementById("expenseForm");
 const tableBody = document.querySelector("#expenseTable tbody");
+const totalDisplay = document.getElementById("total");
 
 let editingId = null;
 
@@ -13,9 +14,9 @@ form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const expense = {
-    title: document.getElementById("name").value, // Title field
+    title: document.getElementById("name").value,
     amount: parseFloat(document.getElementById("amount").value),
-    category: document.getElementById("category").value, // Category field
+    category: document.getElementById("category").value,
     date: document.getElementById("date").value,
   };
 
@@ -44,22 +45,26 @@ async function fetchExpenses() {
   const data = await res.json();
 
   tableBody.innerHTML = "";
-  data.forEach((expense) => {
-    const row = document.createElement("tr");
+  let total = 0;
 
+  data.forEach((expense) => {
+    total += expense.amount;
+
+    const row = document.createElement("tr");
     row.innerHTML = `
       <td>${expense.title}</td>
       <td>${expense.amount}</td>
-      <td>${expense.category}</td> <!-- Category added back here -->
+      <td>${expense.category}</td>
       <td>${expense.date}</td>
       <td class="actions">
         <button class="edit" onclick="editExpense(${expense.id})">Edit</button>
         <button class="delete" onclick="deleteExpense(${expense.id})">Delete</button>
       </td>
     `;
-
     tableBody.appendChild(row);
   });
+
+  totalDisplay.textContent = `Total: ₹${total.toFixed(2)}`;
 }
 
 // Edit expense
@@ -69,7 +74,7 @@ async function editExpense(id) {
 
   document.getElementById("name").value = expense.title;
   document.getElementById("amount").value = expense.amount;
-  document.getElementById("category").value = expense.category; // Populate the category
+  document.getElementById("category").value = expense.category;
   document.getElementById("date").value = expense.date;
 
   editingId = id;
