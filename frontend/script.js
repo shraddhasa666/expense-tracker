@@ -3,11 +3,15 @@ const API_URL = "http://localhost:8080/api/expenses";
 const form = document.getElementById("expenseForm");
 const tableBody = document.querySelector("#expenseTable tbody");
 const totalDisplay = document.getElementById("total");
+const timeFilter = document.getElementById("time-filter");
 
 let editingId = null;
 
 // Fetch all expenses on page load
 window.onload = fetchExpenses;
+
+// Re-fetch on filter change
+timeFilter.addEventListener("change", fetchExpenses);
 
 // Add or update expense
 form.addEventListener("submit", async (e) => {
@@ -39,15 +43,35 @@ form.addEventListener("submit", async (e) => {
   fetchExpenses();
 });
 
-// Fetch and display all expenses
+// Fetch and display filtered expenses
 async function fetchExpenses() {
   const res = await fetch(API_URL);
   const data = await res.json();
 
+  const filter = timeFilter.value;
+  const now = new Date();
+
+  const filteredData = data.filter((expense) => {
+    const expenseDate = new Date(expense.date);
+
+    if (filter === "week") {
+      const oneWeekAgo = new Date();
+      oneWeekAgo.setDate(now.getDate() - 7);
+      return expenseDate >= oneWeekAgo && expenseDate <= now;
+    } else if (filter === "month") {
+      return (
+        expenseDate.getMonth() === now.getMonth() &&
+        expenseDate.getFullYear() === now.getFullYear()
+      );
+    }
+
+    return true; // "all"
+  });
+
   tableBody.innerHTML = "";
   let total = 0;
 
-  data.forEach((expense) => {
+  filteredData.forEach((expense) => {
     total += expense.amount;
 
     const row = document.createElement("tr");

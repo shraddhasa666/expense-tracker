@@ -27,6 +27,15 @@
     </form>
 
     <h2>Expenses</h2>
+    <div style="text-align: center; margin: 20px 0;">
+  <label for="time-filter"><strong>Filter by Time:</strong></label>
+  <select id="time-filter">
+    <option value="all">All</option>
+    <option value="week">This Week</option>
+    <option value="month">This Month</option>
+  </select>
+</div>
+
     <table id="expenseTable">
       <thead>
         <tr>
@@ -39,6 +48,7 @@
       </thead>
       <tbody></tbody>
     </table>
+    <h3 id="total" style="text-align: center; margin-top: 20px;">Total: ₹0</h3>
   </div>
 
   <script src="script.js"></script>
