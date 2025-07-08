@@ -4,19 +4,27 @@ const form = document.getElementById("expenseForm");
 const tableBody = document.querySelector("#expenseTable tbody");
 const totalDisplay = document.getElementById("total");
 const timeFilter = document.getElementById("time-filter");
+const monthSelector = document.getElementById("month-selector");
 
 let editingId = null;
 
-// Set default filter to "today" on load
 window.onload = () => {
   timeFilter.value = "today";
   fetchExpenses();
 };
 
-// Re-fetch when time filter changes
-timeFilter.addEventListener("change", fetchExpenses);
+// Show month selector only if "month" filter is selected
+timeFilter.addEventListener("change", () => {
+  if (timeFilter.value === "month") {
+    monthSelector.style.display = "inline-block";
+  } else {
+    monthSelector.style.display = "none";
+  }
+  fetchExpenses();
+});
 
-// Add or update expense
+monthSelector.addEventListener("change", fetchExpenses);
+
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -46,12 +54,12 @@ form.addEventListener("submit", async (e) => {
   fetchExpenses();
 });
 
-// Fetch and display filtered expenses
 async function fetchExpenses() {
   const res = await fetch(API_URL);
   const data = await res.json();
 
   const filter = timeFilter.value;
+  const selectedMonth = parseInt(monthSelector.value);
   const now = new Date();
 
   const filteredData = data.filter((expense) => {
@@ -63,18 +71,15 @@ async function fetchExpenses() {
         expenseDate.getMonth() === now.getMonth() &&
         expenseDate.getFullYear() === now.getFullYear()
       );
-
-    } else if (filter === "month") {
-      return (
-        expenseDate.getMonth() === now.getMonth() &&
-        expenseDate.getFullYear() === now.getFullYear()
-      );
-
     } else if (filter === "year") {
       return expenseDate.getFullYear() === now.getFullYear();
+    } else if (filter === "month") {
+      return (
+        expenseDate.getMonth() === selectedMonth &&
+        expenseDate.getFullYear() === now.getFullYear()
+      );
     }
-
-    return true; // "all"
+    return true;
   });
 
   tableBody.innerHTML = "";
@@ -97,10 +102,22 @@ async function fetchExpenses() {
     tableBody.appendChild(row);
   });
 
-  totalDisplay.textContent = `Total: ₹${total.toFixed(2)}`;
+  // 👇 Update heading dynamically
+  if (filter === "today") {
+    totalDisplay.textContent = `Today's Total: ₹${total.toFixed(2)}`;
+  } else if (filter === "year") {
+    totalDisplay.textContent = `This Year Expense: ₹${total.toFixed(2)}`;
+  } else if (filter === "month") {
+    const monthNames = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ];
+    totalDisplay.textContent = `${monthNames[selectedMonth]} Expense: ₹${total.toFixed(2)}`;
+  } else {
+    totalDisplay.textContent = `Total: ₹${total.toFixed(2)}`;
+  }
 }
 
-// Edit expense
 async function editExpense(id) {
   const res = await fetch(`${API_URL}/${id}`);
   const expense = await res.json();
@@ -113,7 +130,6 @@ async function editExpense(id) {
   editingId = id;
 }
 
-// Delete expense
 async function deleteExpense(id) {
   if (confirm("Are you sure you want to delete this expense?")) {
     await fetch(`${API_URL}/${id}`, { method: "DELETE" });
