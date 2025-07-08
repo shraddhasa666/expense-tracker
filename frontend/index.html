@@ -13,13 +13,15 @@
     <form id="expenseForm">
       <input type="text" id="name" placeholder="Title" required />
       <input type="number" id="amount" placeholder="Amount" required />
+
+      <!-- 🟡 Category Dropdown -->
       <select id="category" required>
-       <option value="">--Select Category--</option>
-       <option value="Food">Food</option>
-       <option value="Transport">Transport</option>
-       <option value="Shopping">Shopping</option>
-       <option value="Bills">Bills</option>
-       <option value="Other">Other</option>
+        <option value="">--Select Category--</option>
+        <option value="Food">Food</option>
+        <option value="Transport">Transport</option>
+        <option value="Shopping">Shopping</option>
+        <option value="Bills">Bills</option>
+        <option value="Other">Other</option>
       </select>
 
       <input type="date" id="date" required />
@@ -27,17 +29,19 @@
     </form>
 
     <h2>Expenses</h2>
+
+    <!-- 🟢 Filter Dropdown (Updated) -->
     <div style="text-align: center; margin: 20px 0;">
-  <label for="time-filter"><strong>Filter by Time:</strong></label>
-  <select id="time-filter">
-  <option value="all">All</option>
-  <option value="week">This Week</option>
-  <option value="month">This Month</option>
-  <option value="prev-months">Previous Months (This Year)</option>
-  <option value="year">This Year</option>
-</select>
+      <label for="time-filter"><strong>Filter by Time:</strong></label>
+      <select id="time-filter">
+        <option value="all">All</option>
+        <option value="week">This Week</option>
+        <option value="month">This Month</option>
+        <option value="year">This Year</option>
+      </select>
+    </div>
 
-
+    <!-- 🧾 Expenses Table -->
     <table id="expenseTable">
       <thead>
         <tr>
@@ -50,6 +54,8 @@
       </thead>
       <tbody></tbody>
     </table>
+
+    <!-- 💰 Total Display -->
     <h3 id="total" style="text-align: center; margin-top: 20px;">Total: ₹0</h3>
   </div>
 

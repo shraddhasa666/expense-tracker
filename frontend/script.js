@@ -10,7 +10,7 @@ let editingId = null;
 // Fetch all expenses on page load
 window.onload = fetchExpenses;
 
-// Re-fetch on filter change
+// Re-fetch when time filter changes
 timeFilter.addEventListener("change", fetchExpenses);
 
 // Add or update expense
@@ -52,32 +52,25 @@ async function fetchExpenses() {
   const now = new Date();
 
   const filteredData = data.filter((expense) => {
-  const expenseDate = new Date(expense.date);
+    const expenseDate = new Date(expense.date);
 
-  if (filter === "week") {
-    const oneWeekAgo = new Date();
-    oneWeekAgo.setDate(now.getDate() - 7);
-    return expenseDate >= oneWeekAgo && expenseDate <= now;
+    if (filter === "week") {
+      const oneWeekAgo = new Date();
+      oneWeekAgo.setDate(now.getDate() - 7);
+      return expenseDate >= oneWeekAgo && expenseDate <= now;
 
-  } else if (filter === "month") {
-    return (
-      expenseDate.getMonth() === now.getMonth() &&
-      expenseDate.getFullYear() === now.getFullYear()
-    );
+    } else if (filter === "month") {
+      return (
+        expenseDate.getMonth() === now.getMonth() &&
+        expenseDate.getFullYear() === now.getFullYear()
+      );
 
-  } else if (filter === "prev-months") {
-    return (
-      expenseDate.getFullYear() === now.getFullYear() &&
-      expenseDate.getMonth() < now.getMonth()
-    );
+    } else if (filter === "year") {
+      return expenseDate.getFullYear() === now.getFullYear();
+    }
 
-  } else if (filter === "year") {
-    return expenseDate.getFullYear() === now.getFullYear();
-  }
-
-  return true; // "all"
-});
-
+    return true; // "all"
+  });
 
   tableBody.innerHTML = "";
   let total = 0;
