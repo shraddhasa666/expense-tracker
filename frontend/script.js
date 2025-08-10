@@ -5,11 +5,13 @@ const tableBody = document.querySelector("#expenseTable tbody");
 const totalDisplay = document.getElementById("total");
 const timeFilter = document.getElementById("time-filter");
 const monthSelector = document.getElementById("month-selector");
+const categoryFilter = document.getElementById("category-filter");  // NEW
 
 let editingId = null;
 
 window.onload = () => {
   timeFilter.value = "today";
+  categoryFilter.value = "all";      // NEW
   fetchExpenses();
 };
 
@@ -24,6 +26,7 @@ timeFilter.addEventListener("change", () => {
 });
 
 monthSelector.addEventListener("change", fetchExpenses);
+categoryFilter.addEventListener("change", fetchExpenses);  // NEW
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -60,26 +63,35 @@ async function fetchExpenses() {
 
   const filter = timeFilter.value;
   const selectedMonth = parseInt(monthSelector.value);
+  const selectedCategory = categoryFilter.value.toLowerCase(); // NEW
   const now = new Date();
 
   const filteredData = data.filter((expense) => {
     const expenseDate = new Date(expense.date);
 
+    // Time filtering logic
+    let timeMatch = false;
     if (filter === "today") {
-      return (
+      timeMatch =
         expenseDate.getDate() === now.getDate() &&
         expenseDate.getMonth() === now.getMonth() &&
-        expenseDate.getFullYear() === now.getFullYear()
-      );
+        expenseDate.getFullYear() === now.getFullYear();
     } else if (filter === "year") {
-      return expenseDate.getFullYear() === now.getFullYear();
+      timeMatch = expenseDate.getFullYear() === now.getFullYear();
     } else if (filter === "month") {
-      return (
+      timeMatch =
         expenseDate.getMonth() === selectedMonth &&
-        expenseDate.getFullYear() === now.getFullYear()
-      );
+        expenseDate.getFullYear() === now.getFullYear();
+    } else {
+      timeMatch = true;
     }
-    return true;
+
+    // Category filtering logic
+    const categoryMatch =
+      selectedCategory === "all" ||
+      expense.category.toLowerCase() === selectedCategory;
+
+    return timeMatch && categoryMatch;
   });
 
   tableBody.innerHTML = "";
@@ -91,7 +103,7 @@ async function fetchExpenses() {
     const row = document.createElement("tr");
     row.innerHTML = `
       <td>${expense.title}</td>
-      <td>${expense.amount}</td>
+      <td>${expense.amount.toFixed(2)}</td>
       <td>${expense.category}</td>
       <td>${expense.date}</td>
       <td class="actions">
@@ -102,19 +114,24 @@ async function fetchExpenses() {
     tableBody.appendChild(row);
   });
 
-  // 👇 Update heading dynamically
+  // Update total display with category text
+  let categoryText = "";
+  if (selectedCategory !== "all") {
+    categoryText = " - " + selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1);
+  }
+
   if (filter === "today") {
-    totalDisplay.textContent = `Today's Total: ₹${total.toFixed(2)}`;
+    totalDisplay.textContent = `Today's Total${categoryText}: ₹${total.toFixed(2)}`;
   } else if (filter === "year") {
-    totalDisplay.textContent = `This Year Expense: ₹${total.toFixed(2)}`;
+    totalDisplay.textContent = `This Year Expense${categoryText}: ₹${total.toFixed(2)}`;
   } else if (filter === "month") {
     const monthNames = [
       "January", "February", "March", "April", "May", "June",
       "July", "August", "September", "October", "November", "December"
     ];
-    totalDisplay.textContent = `${monthNames[selectedMonth]} Expense: ₹${total.toFixed(2)}`;
+    totalDisplay.textContent = `${monthNames[selectedMonth]} Expense${categoryText}: ₹${total.toFixed(2)}`;
   } else {
-    totalDisplay.textContent = `Total: ₹${total.toFixed(2)}`;
+    totalDisplay.textContent = `Total${categoryText}: ₹${total.toFixed(2)}`;
   }
 }
 
